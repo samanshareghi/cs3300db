@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib
+END
+QueryInterface.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cs3300db/!svn/ver/42/cs3300db/src/queryLib/QueryInterface.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/cs3300db/!svn/ver/42/cs3300db/src/queryLib/__init__.py
+END
+QueryPreProcessing.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/QueryPreProcessing.py
+END
+QueryLib.py
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/cs3300db/!svn/ver/45/cs3300db/src/queryLib/QueryLib.py
+END
+QueryPostProcessing.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/QueryPostProcessing.py
+END
+QueryEngine.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/QueryEngine.py
+END
+TestDriver.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/TestDriver.py
+END
+QueryQueue.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/cs3300db/!svn/ver/30/cs3300db/src/queryLib/QueryQueue.py
+END

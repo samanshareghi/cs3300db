@@ -1,0 +1,423 @@
+DROP SCHEMA IF EXISTS cs3300db_stressTests;
+CREATE SCHEMA cs3300db_stressTests;
+Use cs3300db_stressTests;
+
+
+CREATE TABLE tb_league(
+	league 			INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	properties 		VARCHAR(1024),
+	name 			VARCHAR(100) NOT NULL,
+	admin 			VARCHAR(100) NOT NULL
+)AUTO_INCREMENT = 1001;
+
+CREATE TABLE tb_entity(
+	entity 		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	first_name 	VARCHAR(100),
+	last_name 	VARCHAR(100),
+	date_of_birth 	DATE,
+	username 	VARCHAR(100) NOT NULL,
+	email_address 	VARCHAR(100),
+	password 	VARCHAR(100) NOT NULL,
+	gender 		VARCHAR(100),
+	wealth 		FLOAT(14,2) DEFAULT 5000.00,
+	isbanned	INT NOT NULL DEFAULT 0,
+	banned		BOOL NOT NULL DEFAULT 0,
+	KEY `wealth_idx` (`wealth`) USING BTREE,
+	KEY `banned_idx` (`banned`) USING BTREE
+)AUTO_INCREMENT = 2001;
+
+CREATE TABLE tb_portfolio(
+	portfolio 	INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	entity 		INT NOT NULL,
+	league 		INT NOT NULL,
+	balance 	FLOAT(14,2),
+	FOREIGN KEY (entity) REFERENCES tb_entity(entity),
+	FOREIGN KEY (league) REFERENCES tb_league(league)
+)AUTO_INCREMENT = 3001;
+
+CREATE TABLE tb_rank(
+	rank 		INT,
+	net_worth 	FLOAT(14,2),
+	league 		INT NOT NULL,
+	portfolio 	INT NOT NULL,
+	PRIMARY KEY(league, portfolio),
+	FOREIGN KEY (league) REFERENCES tb_league(league),
+	FOREIGN KEY (portfolio) REFERENCES tb_portfolio(portfolio)
+);
+
+CREATE TABLE tb_stock_index(
+	stock_index 	INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	label 		VARCHAR(100) NOT NULL
+)AUTO_INCREMENT = 4001;
+
+CREATE TABLE tb_stock_exchange(
+	stock_exchange 	INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	label 		VARCHAR(100) NOT NULL
+)AUTO_INCREMENT = 5001;
+
+CREATE TABLE tb_stock(
+	stock 		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	label 		VARCHAR(100),
+	symbol 		VARCHAR(100) NOT NULL UNIQUE,
+	stock_index		INT,
+	stock_exchange 	INT,
+	current_cost 	FLOAT(6,2)
+)AUTO_INCREMENT = 30001;
+
+# tb_price removed
+
+CREATE TABLE tb_portfolio_content(
+	portfolio_content	 	INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	stock 		INT NOT NULL,
+	portfolio 	INT NOT NULL,
+	cost 		FLOAT(6,2) NOT NULL,
+	quantity	INT NOT NULL,
+	recorded	INT DEFAULT 0,
+	#PRIMARY KEY(stock, portfolio),
+	FOREIGN KEY (stock) REFERENCES tb_stock(stock),
+	FOREIGN KEY (portfolio) REFERENCES tb_portfolio(portfolio)
+);
+
+CREATE TABLE tb_transaction_type(
+	transaction_type	INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	label 			VARCHAR(100) NOT NULL
+)AUTO_INCREMENT = 7001;
+
+CREATE TABLE tb_transaction(
+	transaction		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	stock 			INT NOT NULL,
+	price_at_date		FLOAT(6,2),
+	cost		FLOAT(6,2),
+	dated 			DATETIME,
+	quantity		INT NOT NULL,
+	portfolio 		INT NOT NULL,
+	transaction_type	INT NOT NULL,
+	FOREIGN KEY (stock) REFERENCES tb_stock(stock),
+	FOREIGN KEY (portfolio) REFERENCES tb_portfolio(portfolio),
+	FOREIGN KEY (transaction_type) REFERENCES tb_transaction_type(transaction_type)
+)AUTO_INCREMENT = 8001;
+
+#------------------------------------------------------------------------------------
+# League
+#------------------------------------------------------------------------------------
+INSERT INTO tb_league (`name`, `admin`) VALUES ('Fantasy League Test 1', 'Bob');
+INSERT INTO tb_league (`name`, `admin`) VALUES ('Fantasy League Test 2', 'Joe');
+
+# 2 leagues created - 1001 (Bob) and 1002 (Joe)
+
+#------------------------------------------------------------------------------------
+# Entity
+#------------------------------------------------------------------------------------
+INSERT INTO tb_entity 	(first_name, 	last_name, 	date_of_birth,	username,	email_address,		password,	gender, banned) 
+				VALUES 		('Bryan', 	'Cranston', 	'1956-03-07',	'heisenberg',	'BC@nomail.com',	'BCpassword',	'male',0);
+				
+INSERT INTO tb_entity 	(first_name, 	last_name, 	date_of_birth,	username,	email_address,		password,	gender, banned) 
+				VALUES 		('Jennifer', 	'Lawrence', 	'1990-08-15',	'katniss',	'JL@nomail.com',	'JLpassword',	'female',0);
+				
+INSERT INTO tb_entity 	(first_name, 	last_name, 	date_of_birth,	username,	email_address,		password,	gender, banned) 
+				VALUES 		('Hugh', 	'Jackman', 	'1968-10-12',	'wolverine',	'HJ@nomail.com',	'HJpassword',	'male',0);
+				
+INSERT INTO tb_entity 	(first_name, 	last_name, 	date_of_birth,	username,	email_address,		password,	gender, banned) 
+				VALUES 		('Natalie', 	'Portman', 	'1981-06-09',	'blackswan',	'NP@nomail.com',	'NPpassword',	'female',0);
+
+# 4 entitys created with ids - Bryan (2001), Jennifer (2001), Hugh (2003), Natalie (2004)
+
+#------------------------------------------------------------------------------------
+# Portfolio
+#------------------------------------------------------------------------------------
+INSERT INTO tb_portfolio 
+		(entity, 	league, 	balance) 
+VALUES 		('2001', 	'1001', 	'5000.00');
+				
+INSERT INTO tb_portfolio
+		(entity, 	league, 	balance) 
+VALUES 		('2001', 	'1002', 	'5000.00');
+				
+INSERT INTO tb_portfolio
+		(entity, 	league, 	balance) 
+VALUES 		('2002', 	'1001', 	'5000.00');
+				
+INSERT INTO tb_portfolio
+		(entity, 	league, 	balance) 
+VALUES 		('2002', 	'1002', 	'5000.00');
+				
+INSERT INTO tb_portfolio 
+		(entity, 	league, 	balance) 
+VALUES 		('2003', 	'1002', 	'5000.00');
+				
+INSERT INTO tb_portfolio
+		(entity, 	league, 	balance) 
+VALUES 		('2004', 	'1002', 	'5000.00');
+
+#portfolios created
+#port	entity	league	balance
+#3001	2001	1001	5000.00		# bryan cranston
+#3002	2001	1002	5000.00		# bryan cranston
+#3003	2002	1001	5000.00		# Jennifer
+#3004	2002	1002	5000.00		# Jennifer
+#3005	2003	1002	5000.00		# Hugh
+#3006	2004	1002	5000.00		# Natalie
+# 4 entitys created with ids - Bryan (2001), Jennifer (2002), Hugh (2003), Natalie (2004)	
+#------------------------------------------------------------------------------------
+# Stock Exchange - not used
+#------------------------------------------------------------------------------------
+				
+INSERT INTO tb_stock_exchange
+			(`label`)
+VALUES			('NYSE');
+				
+INSERT INTO tb_stock_exchange
+			(`label`)
+VALUES			('NASDAQ');
+			
+# 2 exchanges created NYSE (5001), NASDAQ (5002)
+				
+#------------------------------------------------------------------------------------
+# Stock indexes  - not used
+#------------------------------------------------------------------------------------
+				
+INSERT INTO tb_stock_index
+			(`label`)
+VALUES			('DJIA');
+				
+INSERT INTO tb_stock_index
+			(`label`)
+VALUES			('Russell 3000');
+			
+# 2 indexes created DJIA (4001), Russell 3000 (4002)
+
+#------------------------------------------------------------------------------------
+# Stock
+#------------------------------------------------------------------------------------
+
+INSERT INTO tb_stock
+		(`label`,		`symbol`,	`stock_index`,	`stock_exchange`,	current_cost)
+VALUES		('3M',			'MMM',		'4001',		'5001',				'99.99');
+
+INSERT INTO tb_stock
+		(`label`,		`symbol`,	`stock_index`,	`stock_exchange`,	current_cost)
+VALUES		('American Epxress',	'AXP',		'4001',		'5001',		'99.99');
+
+INSERT INTO tb_stock
+		(`label`,		`symbol`,	`stock_index`,	`stock_exchange`,	current_cost)
+VALUES		('AT&T',		'T',		'4001',		'5001',				'99.99');
+
+INSERT INTO tb_stock
+		(`label`,		`symbol`,	`stock_index`,	`stock_exchange`,	current_cost)
+VALUES		('Boeing',		'BA',		'4001',		'5001',				'99.99');
+
+# 3 stocks created 3M (30001), American Express (30002), AT&T (30003)
+
+#------------------------------------------------------------------------------------
+# Price  - removed
+#------------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------------
+# Transaction Type (ids 7001 and up)
+#------------------------------------------------------------------------------------
+
+INSERT INTO tb_transaction_type
+	(`label`)
+VALUES	('Buy');
+
+INSERT INTO tb_transaction_type
+	(`label`)
+VALUES	('Sell');
+
+INSERT INTO tb_transaction_type
+	(`label`)
+VALUES	('Pending');
+
+# 3 transaction types created 	7001	Buy,	7002	Sell,	7003	Pending
+
+#------------------------------------------------------------------------------------
+# Transaction (ids 8001 and up)
+#------------------------------------------------------------------------------------
+# 3 stocks created 3M (30001), American Express (30002), AT&T (30003)
+# NOTE price_at_date is buying price, dated is date bought(same as price_at_date if buying NOW, future date if PENDING tansaction for a future buy)
+# 3 transaction types created 	7001	Buy,	7002	Sell,	7003	Pending
+# 4 entitys created with ids - Bryan (2001), Jennifer (2001), Hugh (2003), Natalie (2004)
+#portfolios created
+#port	entity	league	balance
+#3001	2001	1001	5000.00		# bryan cranston
+#3002	2001	1002	5000.00		# bryan cranston
+#3003	2002	1001	5000.00		# Jennifer
+#3004	2002	1002	5000.00		# Jennifer
+#3005	2003	1002	5000.00		# Hugh
+#3006	2004	1002	5000.00		# Natalie
+
+#------------------------------------------------------------------------------------
+#--- BUY - Each portfolio buys some of each of the three test stocks, non-pending only
+#------------------------------------------------------------------------------------
+
+# ----------------              bryan cranston league 1  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'118.00',			'118.00',		'2013-10-01 8:00.00',	'10',		'3001',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,					`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'68.00',			'68.00',	'2013-10-02 9:00.00',		'20',		'3001',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,		`portfolio`,					`transaction_type`)
+VALUES
+('30003',	'28.00',			'28.00',		'2013-10-03 10:00.00',	'15',		'3001',				'7001');
+
+# ----------------              bryan cranston league 2  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'118.00',			'118.00',		'2013-10-01 8:00.00',	'10',		'3002',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,					`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'68.00',			'68.00',	'2013-10-02 9:00.00',		'20',		'3002',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,		`portfolio`,					`transaction_type`)
+VALUES
+('30003',	'28.00',			'28.00',		'2013-10-03 10:00.00',	'15',		'3002',				'7001');
+
+# ----------------              Jennifer Lawrence league 1  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'119.55',			'119.55',	'2013-10-01 9:00.00',	'20',		'3003',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'65.23',			'65.23',		'2013-10-02 12:00.00',	'11',		'3003',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30003',	'27.00',			'27.00',		'2013-10-03 13:00.00',	'13',		'3003',				'7001');
+
+# ----------------             Jennifer Lawrence league 2  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'119.55',			'119.55',	'2013-10-01 9:00.00',	'20',		'3004',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'65.23',			'65.23',		'2013-10-02 12:00.00',	'11',		'3004',				'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,				`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30003',	'27.00',			'27.00',		'2013-10-03 13:00.00',	'13',		'3004',				'7001');
+
+
+# ----------------             Hugh Jackman league 2  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'116.32',			'116.32',		'2013-10-02 11:00.00',	'14',		'3005',			'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'66.70',			'66.70',		'2013-10-03 12:00.00',	'16',		'3005',			'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30003',	'24.56',			'24.56',		'2013-10-04 14:00.00',	'17',		'3005',			'7001');
+
+# ----------------             Natalie Portman league 2  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'121.20',			'121.20',		'2013-10-02 14:40.00',	'18',		'3006',			'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'65.60',			'65.60',		'2013-10-03 15:00.00',	'19',		'3006',			'7001');
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,			`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30003',	'25.65',			'25.65',		'2013-10-04 16:20.00',	'20',		'3006',			'7001');
+
+#------------------------------------------------------------------------------------
+#--- PENDING BUYS - 4 pending Boeing stock transactions 
+#------------------------------------------------------------------------------------
+
+# ----------------              bryan cranston league 1  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30004',	'0.01',				'0.01',			'2014-01-01 8:00.00',	'1',		'3001',			'7003');
+
+# ----------------              bryan cranston league 2  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30004',	'0.01',				'0.01',			'2014-01-02 9:00.00',	'1',		'3002',			'7003');
+
+# ----------------              Jennifer Lawrence league 1  -----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30004',	'0.01',				'0.01',		'2014-01-01 9:00.00',	'1',		'3003',			'7003');
+
+# ----------------              Jennifer Lawrence league 2   Boeing Stock-----------------------------
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30004',	'0.01',				'0.01',			'2014-01-02 10:00.00',	'1',		'3004',			'7003');
+
+#------------------------------------------------------------------------------------
+#--- SELL - Everyone in league 1 sells their 3M stock and everyone in league 2 sells
+#	their American Express stock - all on 2013-10-10
+#------------------------------------------------------------------------------------
+
+#------------------------------------league 1---------------------------------------
+#BC league 1
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'121.00',			'121.00',		'2013-10-10 8:00.00',	'10',		'3001',			'7002');
+
+# JL League 1
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,		`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30001',	'121.00',			'121.00',		'2013-10-10 8:00.00',	'20',		'3003',			'7002');
+
+#------------------------------------league 2--------------------------------------
+
+#BC league 2
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'72.00',			'72.00',		'2013-10-10 9:00.00',	'8',		'3002',			'7002');
+
+#JL League 2
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'72.00',			'72.00',		'2013-10-10 9:00.00',	'9',		'3004',			'7002');
+
+#HJ league 2
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'72.00',			'72.00',		'2013-10-10 9:00.00',	'16',		'3005',			'7002');
+
+#NP League 2
+
+INSERT INTO tb_transaction
+(`stock`,	`price_at_date`,	cost,	`dated`,		`quantity`,	`portfolio`,		`transaction_type`)
+VALUES
+('30002',	'72.00',			'72.00',		'2013-10-10 9:00.00',	'19',		'3006',			'7002');
+

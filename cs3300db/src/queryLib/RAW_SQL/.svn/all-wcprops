@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/RAW_SQL
+END
+5_repopulate_cs3300db.txt
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cs3300db/!svn/ver/38/cs3300db/src/queryLib/RAW_SQL/5_repopulate_cs3300db.txt
+END
+7_repopulate_cs3300db_stressTests.txt
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/cs3300db/!svn/ver/43/cs3300db/src/queryLib/RAW_SQL/7_repopulate_cs3300db_stressTests.txt
+END
+6_repopulate_cs3300db_testcases.txt
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/cs3300db/!svn/ver/38/cs3300db/src/queryLib/RAW_SQL/6_repopulate_cs3300db_testcases.txt
+END
